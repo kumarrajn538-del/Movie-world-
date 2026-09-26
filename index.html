@@ -2,59 +2,89 @@
 <html lang="hi">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Movie World - Real YouTube Movies</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Movie World - YouTube Clone</title>
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
   <style>
     * {
       box-sizing: border-box;
       margin: 0;
       padding: 0;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      -webkit-tap-highlight-color: transparent;
+      user-select: none;
     }
 
     body {
-      background-color: #0f1218;
-      color: #ffffff;
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
+      background-color: #0f0f0f;
+      color: #f1f1f1;
+      padding-bottom: 60px;
+      overflow-x: hidden;
     }
 
-    /* Navbar */
+    /* Top App Bar */
     header {
-      background: #171b24;
-      padding: 15px 25px;
+      background: #0f0f0f;
+      padding: 10px 16px;
       display: flex;
-      flex-wrap: wrap;
       justify-content: space-between;
       align-items: center;
       position: sticky;
       top: 0;
-      z-index: 100;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.6);
-      gap: 15px;
+      z-index: 200;
+      border-bottom: 1px solid #222;
     }
 
-    .logo {
-      font-size: 1.6rem;
-      font-weight: 800;
-      color: #e50914;
-      letter-spacing: 1px;
+    .brand {
       display: flex;
       align-items: center;
+      gap: 8px;
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: #fff;
+      cursor: pointer;
+    }
+
+    .brand i {
+      color: #ff0000;
+      font-size: 1.6rem;
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .icon-btn {
+      background: none;
+      border: none;
+      color: #fff;
+      font-size: 1.2rem;
+      cursor: pointer;
+    }
+
+    /* Search Bar */
+    .search-bar-wrap {
+      display: none;
+      padding: 10px 16px;
+      background: #0f0f0f;
+      border-bottom: 1px solid #222;
+    }
+
+    .search-bar-wrap.open {
+      display: flex;
       gap: 10px;
     }
 
     .search-box {
       display: flex;
       align-items: center;
-      background: #232834;
-      border-radius: 30px;
-      padding: 6px 16px;
-      width: 100%;
-      max-width: 420px;
-      border: 1px solid #333a4d;
+      background: #222;
+      border-radius: 25px;
+      padding: 6px 14px;
+      flex: 1;
+      border: 1px solid #333;
     }
 
     .search-box input {
@@ -62,499 +92,675 @@
       border: none;
       outline: none;
       color: #fff;
-      padding: 6px;
       width: 100%;
       font-size: 0.95rem;
     }
 
-    .search-box button {
-      background: none;
-      border: none;
-      color: #e50914;
-      cursor: pointer;
-      font-size: 1.1rem;
-    }
-
-    .key-btn {
-      background: #232834;
-      color: #ffb703;
-      border: 1px solid #444d63;
-      padding: 8px 14px;
-      border-radius: 20px;
-      cursor: pointer;
-      font-size: 0.85rem;
+    /* Filter Chips */
+    .chips-bar {
       display: flex;
-      align-items: center;
-      gap: 6px;
-      transition: 0.2s;
-    }
-
-    .key-btn:hover {
-      background: #ffb703;
-      color: #000;
-    }
-
-    /* Category Filter Tags */
-    .filter-tags {
-      display: flex;
-      gap: 12px;
-      padding: 15px 25px;
-      overflow-x: auto;
-      background: #131720;
-      border-bottom: 1px solid #202636;
-      scrollbar-width: none;
-    }
-
-    .filter-tags::-webkit-scrollbar {
-      display: none;
-    }
-
-    .filter-tags button {
-      background: #1f2533;
-      color: #ccc;
-      border: 1px solid #313a4f;
-      padding: 8px 18px;
-      border-radius: 20px;
-      cursor: pointer;
-      white-space: nowrap;
-      font-size: 0.9rem;
-      font-weight: 500;
-      transition: all 0.2s ease;
-    }
-
-    .filter-tags button.active, .filter-tags button:hover {
-      background: #e50914;
-      color: #fff;
-      border-color: #e50914;
-      box-shadow: 0 4px 12px rgba(229, 9, 20, 0.4);
-    }
-
-    /* Main Grid */
-    main {
-      padding: 25px;
-      flex: 1;
-    }
-
-    .section-title {
-      font-size: 1.25rem;
-      font-weight: 700;
-      margin-bottom: 20px;
-      color: #f1f1f1;
-      display: flex;
-      align-items: center;
       gap: 8px;
+      padding: 10px 16px;
+      overflow-x: auto;
+      white-space: nowrap;
+      background: #0f0f0f;
+      scrollbar-width: none;
+      position: sticky;
+      top: 55px;
+      z-index: 100;
     }
 
-    .movies-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-      gap: 22px;
-    }
+    .chips-bar::-webkit-scrollbar { display: none; }
 
-    .movie-card {
-      background: #1a1f2c;
-      border-radius: 12px;
-      overflow: hidden;
+    .chip {
+      background: #272727;
+      color: #f1f1f1;
+      border: none;
+      padding: 6px 14px;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      font-weight: 500;
       cursor: pointer;
-      transition: transform 0.3s ease, box-shadow 0.3s ease;
-      position: relative;
-      border: 1px solid #283042;
     }
 
-    .movie-card:hover {
-      transform: translateY(-7px);
-      box-shadow: 0 12px 24px rgba(229, 9, 20, 0.35);
-      border-color: #e50914;
+    .chip.active {
+      background: #fff;
+      color: #000;
+      font-weight: 600;
     }
 
-    .thumbnail-container {
+    /* Feed Layout */
+    .feed-container {
+      padding: 10px 0;
+    }
+
+    .feed-item {
+      margin-bottom: 20px;
+      cursor: pointer;
+    }
+
+    .feed-thumb {
       position: relative;
       width: 100%;
-      padding-top: 56.25%;
-      background: #000;
+      aspect-ratio: 16/9;
+      background: #1a1a1a;
     }
 
-    .thumbnail-container img {
-      position: absolute;
-      top: 0;
-      left: 0;
+    .feed-thumb img {
       width: 100%;
       height: 100%;
       object-fit: cover;
     }
 
-    .play-btn {
+    .feed-duration {
       position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      font-size: 2.8rem;
-      color: rgba(255, 255, 255, 0.9);
-      opacity: 0;
-      transition: opacity 0.25s ease, transform 0.25s ease;
-    }
-
-    .movie-card:hover .play-btn {
-      opacity: 1;
-      transform: translate(-50%, -50%) scale(1.1);
-    }
-
-    .movie-info {
-      padding: 14px;
-    }
-
-    .movie-title {
-      font-size: 0.95rem;
+      bottom: 8px;
+      right: 8px;
+      background: rgba(0, 0, 0, 0.8);
+      font-size: 0.75rem;
+      padding: 2px 6px;
+      border-radius: 4px;
       font-weight: 600;
-      line-height: 1.4;
-      margin-bottom: 8px;
+    }
+
+    .feed-meta {
+      display: flex;
+      gap: 12px;
+      padding: 12px 16px 0;
+    }
+
+    .feed-channel-avatar {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      background: #e50914;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      color: #fff;
+      flex-shrink: 0;
+    }
+
+    .feed-details { flex: 1; }
+
+    .feed-title {
+      font-size: 0.95rem;
+      line-height: 1.35;
+      font-weight: 500;
+      margin-bottom: 4px;
       display: -webkit-box;
       -webkit-line-clamp: 2;
       -webkit-box-orient: vertical;
       overflow: hidden;
-      color: #fff;
     }
 
-    .movie-meta {
+    .feed-sub {
       font-size: 0.8rem;
-      color: #9aa4be;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
+      color: #aaa;
     }
 
-    /* Video Player Modal */
-    .modal {
+    /* Watch Page View */
+    #watchView {
       display: none;
-      position: fixed;
-      inset: 0;
-      background: rgba(0, 0, 0, 0.9);
-      z-index: 1000;
-      align-items: center;
-      justify-content: center;
-      padding: 15px;
     }
 
-    .modal.open {
-      display: flex;
-    }
-
-    .modal-content {
-      position: relative;
-      width: 100%;
-      max-width: 900px;
-      background: #000;
-      border-radius: 12px;
-      overflow: hidden;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.8);
-    }
-
-    .iframe-wrapper {
-      position: relative;
-      padding-top: 56.25%;
-    }
-
-    .iframe-wrapper iframe {
-      position: absolute;
+    .player-container {
+      position: sticky;
       top: 0;
-      left: 0;
+      z-index: 300;
+      width: 100%;
+      aspect-ratio: 16/9;
+      background: #000;
+      overflow: hidden;
+    }
+
+    #ytPlayerFrame {
       width: 100%;
       height: 100%;
-      border: none;
     }
 
-    .close-modal {
+    #brightnessFilter {
       position: absolute;
-      top: -42px;
-      right: 0;
-      background: transparent;
+      inset: 0;
+      background: black;
+      opacity: 0;
+      pointer-events: none;
+      z-index: 310;
+    }
+
+    .touch-overlay {
+      position: absolute;
+      inset: 0;
+      z-index: 320;
+      display: flex;
+      pointer-events: auto;
+    }
+
+    .touch-zone {
+      flex: 1;
+      height: 100%;
+      position: relative;
+    }
+
+    .seek-indicator {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      background: rgba(0, 0, 0, 0.7);
       color: #fff;
-      font-size: 2rem;
-      border: none;
+      padding: 15px 25px;
+      border-radius: 50px;
+      font-size: 0.95rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 5px;
+      opacity: 0;
+      transition: opacity 0.2s ease;
+      pointer-events: none;
+    }
+
+    .seek-indicator.show { opacity: 1; }
+    .seek-left { left: 15%; }
+    .seek-right { right: 15%; }
+
+    .hud-display {
+      position: absolute;
+      top: 15px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(0, 0, 0, 0.8);
+      border: 1px solid #444;
+      padding: 6px 16px;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      display: none;
+      z-index: 330;
+      pointer-events: none;
+    }
+
+    .skip-ad-btn {
+      position: absolute;
+      bottom: 20px;
+      right: 15px;
+      background: rgba(0, 0, 0, 0.85);
+      border: 1px solid #fff;
+      color: #fff;
+      padding: 8px 14px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      border-radius: 4px;
+      z-index: 330;
       cursor: pointer;
     }
 
-    /* API Key Modal Styling */
+    /* Quality & Sleep Menus */
+    .quality-btn {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      background: rgba(0, 0, 0, 0.6);
+      color: #fff;
+      border: none;
+      padding: 6px 10px;
+      border-radius: 6px;
+      font-size: 0.8rem;
+      z-index: 330;
+      cursor: pointer;
+    }
+
+    .menu-dropdown {
+      display: none;
+      position: absolute;
+      top: 45px;
+      right: 12px;
+      background: #222;
+      border: 1px solid #444;
+      border-radius: 8px;
+      z-index: 340;
+      overflow: hidden;
+      min-width: 140px;
+    }
+
+    .menu-dropdown.open { display: block; }
+
+    .menu-dropdown div {
+      padding: 10px 16px;
+      font-size: 0.85rem;
+      cursor: pointer;
+      border-bottom: 1px solid #333;
+    }
+
+    .menu-dropdown div:hover {
+      background: #ff0000;
+      color: #fff;
+    }
+
+    /* Video Details & Interaction Bar */
+    .video-info-box {
+      padding: 14px 16px;
+      border-bottom: 1px solid #222;
+    }
+
+    .video-info-title {
+      font-size: 1.05rem;
+      font-weight: 600;
+      line-height: 1.4;
+      margin-bottom: 10px;
+    }
+
+    .channel-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 14px;
+    }
+
+    .channel-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .channel-name {
+      font-weight: 600;
+      font-size: 0.9rem;
+    }
+
+    .sub-btn {
+      background: #fff;
+      color: #000;
+      font-weight: 600;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      cursor: pointer;
+    }
+
+    .sub-btn.subscribed {
+      background: #272727;
+      color: #fff;
+    }
+
+    .action-row {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      scrollbar-width: none;
+      padding-bottom: 5px;
+    }
+
+    .action-row::-webkit-scrollbar { display: none; }
+
+    .action-pill {
+      background: #272727;
+      color: #fff;
+      border: none;
+      padding: 7px 14px;
+      border-radius: 20px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    .action-pill.active-pill {
+      background: #7209b7;
+      color: #fff;
+    }
+
+    .action-pill.download-btn {
+      background: #00b4d8;
+      color: #000;
+    }
+
+    /* Bottom Navigation Bar */
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 52px;
+      background: #0f0f0f;
+      border-top: 1px solid #222;
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      z-index: 200;
+    }
+
+    .nav-item {
+      background: none;
+      border: none;
+      color: #aaa;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      font-size: 0.7rem;
+      gap: 4px;
+      cursor: pointer;
+    }
+
+    .nav-item.active { color: #fff; }
+    .nav-item i { font-size: 1.25rem; }
+
+    /* API Key Modal */
     .key-modal {
       display: none;
       position: fixed;
       inset: 0;
-      background: rgba(0, 0, 0, 0.85);
-      z-index: 2000;
+      background: rgba(0, 0, 0, 0.88);
+      z-index: 1000;
       align-items: center;
       justify-content: center;
       padding: 20px;
     }
 
-    .key-modal.open {
-      display: flex;
-    }
+    .key-modal.open { display: flex; }
 
     .key-box {
-      background: #1c222e;
-      border: 1px solid #364157;
+      background: #1e1e1e;
       border-radius: 12px;
-      max-width: 450px;
+      padding: 22px;
+      max-width: 400px;
       width: 100%;
-      padding: 25px;
       text-align: center;
-      box-shadow: 0 8px 30px rgba(0,0,0,0.7);
     }
 
-    .key-box i.key-icon {
-      font-size: 2.8rem;
-      color: #ffb703;
-      margin-bottom: 15px;
-    }
-
-    .key-box h2 {
-      font-size: 1.3rem;
-      margin-bottom: 8px;
-    }
-
-    .key-box p {
-      color: #9aa4be;
-      font-size: 0.9rem;
-      margin-bottom: 20px;
-      line-height: 1.5;
-    }
-
-    .key-input-field {
+    .key-box input {
       width: 100%;
-      padding: 12px 15px;
-      background: #12161f;
-      border: 1px solid #3a455c;
-      border-radius: 8px;
+      padding: 10px;
+      margin: 15px 0;
+      background: #111;
+      border: 1px solid #444;
       color: #fff;
-      font-size: 0.95rem;
-      margin-bottom: 15px;
-      outline: none;
+      border-radius: 8px;
     }
 
-    .key-input-field:focus {
-      border-color: #e50914;
-    }
-
-    .key-save-btn {
-      width: 100%;
-      padding: 12px;
-      background: #e50914;
-      color: white;
+    .key-box button {
+      background: #ff0000;
+      color: #fff;
       border: none;
+      padding: 10px 20px;
       border-radius: 8px;
       font-weight: 600;
-      font-size: 1rem;
       cursor: pointer;
-      transition: 0.2s;
-    }
-
-    .key-save-btn:hover {
-      background: #b80710;
-    }
-
-    .loading-msg {
-      color: #aaa;
-      grid-column: 1 / -1;
-      text-align: center;
-      padding: 40px;
-      font-size: 1.2rem;
+      width: 100%;
     }
   </style>
 </head>
 <body>
 
-  <!-- Navbar -->
+  <!-- Hidden background audio runner (MediaSession keeps lockscreen awake) -->
+  <audio id="silentAudio" loop>
+    <source src="data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQAAAAA=" type="audio/wav">
+  </audio>
+
+  <!-- Top App Bar -->
   <header>
-    <div class="logo">
-      <i class="fa-solid fa-film"></i> MOVIE WORLD
+    <div class="brand" onclick="goHome()">
+      <i class="fa-brands fa-youtube"></i> Movie World
     </div>
-    <div class="search-box">
-      <input type="text" id="searchInput" placeholder="Search any movie, anime, show...">
-      <button onclick="handleSearch()"><i class="fa-solid fa-magnifying-glass"></i></button>
+    <div class="header-actions">
+      <button class="icon-btn" onclick="toggleSearchBar()"><i class="fa-solid fa-magnifying-glass"></i></button>
+      <button class="icon-btn" onclick="openKeyModal()"><i class="fa-solid fa-key"></i></button>
     </div>
-    <!-- Key setting button -->
-    <button class="key-btn" onclick="openKeyModal()"><i class="fa-solid fa-key"></i> Set / Change Key</button>
   </header>
 
-  <!-- Categories -->
-  <div class="filter-tags">
-    <button class="active" onclick="filterCategory('Action Movies Hindi Dubbed', this)">🔥 Action</button>
-    <button onclick="filterCategory('South Hindi Dubbed Full Movies', this)">💥 South Dubbed</button>
-    <button onclick="filterCategory('Bollywood Full Movies', this)">🎬 Bollywood</button>
-    <button onclick="filterCategory('Anime Episodes Hindi Dubbed', this)">⚡ Anime</button>
-    <button onclick="filterCategory('Comedy Movies Hindi', this)">😂 Comedy</button>
-    <button onclick="filterCategory('Hollywood Movies Hindi Dubbed', this)">🍿 Hollywood</button>
+  <!-- Search Bar Row -->
+  <div class="search-bar-wrap" id="searchWrap">
+    <div class="search-box">
+      <input type="text" id="searchInput" placeholder="Search Movies, Series, Anime..." />
+    </div>
+    <button class="icon-btn" onclick="triggerSearch()"><i class="fa-solid fa-arrow-right"></i></button>
   </div>
 
-  <!-- Content Section -->
-  <main>
-    <div class="section-title" id="currentSectionTitle">
-      <i class="fa-solid fa-fire"></i> Trending Movies
-    </div>
-    <div class="movies-grid" id="moviesContainer"></div>
-  </main>
+  <!-- Category Chips -->
+  <div class="chips-bar" id="categoryChips">
+    <button class="chip active" onclick="loadCategory('Latest Hindi Dubbed Movies', this)">All</button>
+    <button class="chip" onclick="loadCategory('South Hindi Dubbed Blockbuster Movies', this)">South Dubbed</button>
+    <button class="chip" onclick="loadCategory('Bollywood Superhit Movies', this)">Bollywood</button>
+    <button class="chip" onclick="loadCategory('Hollywood Hindi Action Movies', this)">Action</button>
+    <button class="chip" onclick="loadCategory('Hindi Dubbed Anime Movies', this)">Anime</button>
+    <button class="chip" onclick="loadCategory('Full Comedy Movies Hindi', this)">Comedy</button>
+  </div>
 
-  <!-- Video Player Modal -->
-  <div class="modal" id="videoModal">
-    <div class="modal-content">
-      <button class="close-modal" onclick="closeVideo()">&times;</button>
-      <div class="iframe-wrapper">
-        <iframe id="videoPlayer" src="" allowfullscreen allow="autoplay; encrypted-media"></iframe>
+  <!-- HOME FEED -->
+  <div id="homeView">
+    <div class="feed-container" id="feedList"></div>
+  </div>
+
+  <!-- DEDICATED WATCH PAGE -->
+  <div id="watchView">
+    <div class="player-container">
+      <div id="ytPlayerFrame"></div>
+      <div id="brightnessFilter"></div>
+      <div class="hud-display" id="hudDisplay">Volume: 100%</div>
+
+      <!-- Quality Button -->
+      <button class="quality-btn" onclick="toggleMenu('qualityMenu')"><i class="fa-solid fa-gear"></i></button>
+      <div class="menu-dropdown" id="qualityMenu">
+        <div onclick="setQuality('hd1080')">1080p Full HD</div>
+        <div onclick="setQuality('hd720')">720p HD</div>
+        <div onclick="setQuality('medium')">480p SD</div>
+        <div onclick="setQuality('small')">360p Data Saver</div>
+        <div onclick="setQuality('auto')">Auto</div>
+      </div>
+
+      <!-- Skip Ad Overlay -->
+      <div class="skip-ad-btn" onclick="skipAdOverlay()">
+        <i class="fa-solid fa-forward"></i> Skip 20s
+      </div>
+
+      <!-- Touch Gestures Overlay -->
+      <div class="touch-overlay">
+        <div class="touch-zone" id="zoneLeft">
+          <div class="seek-indicator seek-left" id="seekLeftIndicator">
+            <i class="fa-solid fa-backward"></i>
+            <span>-10s</span>
+          </div>
+        </div>
+        <div class="touch-zone" id="zoneRight">
+          <div class="seek-indicator seek-right" id="seekRightIndicator">
+            <i class="fa-solid fa-forward"></i>
+            <span>+10s</span>
+          </div>
+        </div>
       </div>
     </div>
+
+    <!-- Video Metadata -->
+    <div class="video-info-box">
+      <h2 class="video-info-title" id="playerTitle">Loading...</h2>
+
+      <!-- Channel & Subscribe -->
+      <div class="channel-row">
+        <div class="channel-left">
+          <div class="feed-channel-avatar" id="channelAvatar">M</div>
+          <div>
+            <div class="channel-name" id="channelTitle">Channel</div>
+            <div style="font-size: 0.75rem; color: #aaa;">4.2M subscribers</div>
+          </div>
+        </div>
+        <button class="sub-btn" id="subBtn" onclick="toggleSubscribe()">Subscribe</button>
+      </div>
+
+      <!-- Action Row (with Sleep Timer & Lock-Play) -->
+      <div class="action-row">
+        <button class="action-pill" id="likeBtn" onclick="toggleLike()">
+          <i class="fa-regular fa-thumbs-up" id="likeIcon"></i> <span id="likeCount">142K</span>
+        </button>
+        <button class="action-pill download-btn" onclick="downloadCurrentVideo()">
+          <i class="fa-solid fa-download"></i> Download
+        </button>
+        <!-- Sleep Timer Button -->
+        <button class="action-pill" id="sleepTimerBtn" onclick="toggleMenu('sleepMenu')">
+          <i class="fa-solid fa-moon"></i> <span id="sleepTimerText">Sleep Timer</span>
+        </button>
+        <!-- Background Play Lock Mode -->
+        <button class="action-pill active-pill" id="bgPlayBtn" onclick="toggleBackgroundPlay()">
+          <i class="fa-solid fa-headphones"></i> <span id="bgStatusText">Lock Play: ON</span>
+        </button>
+        <button class="action-pill" onclick="shareVideo()">
+          <i class="fa-solid fa-share"></i> Share
+        </button>
+      </div>
+
+      <!-- Sleep Timer Menu -->
+      <div class="menu-dropdown" id="sleepMenu" style="position:relative; top:5px; margin-bottom:10px;">
+        <div onclick="setSleepTimer(15)">15 Minutes</div>
+        <div onclick="setSleepTimer(30)">30 Minutes</div>
+        <div onclick="setSleepTimer(45)">45 Minutes</div>
+        <div onclick="setSleepTimer(60)">60 Minutes (1 Hour)</div>
+        <div onclick="setSleepTimer(0)">Turn OFF Timer</div>
+      </div>
+    </div>
+
+    <div style="padding: 12px 16px; font-weight: 600; color: #aaa;">Up Next / Related</div>
+    <div class="feed-container" id="relatedList"></div>
   </div>
 
-  <!-- API Key Input Modal (Pop-up Chabhi Wala) -->
+  <!-- Bottom Navigation -->
+  <nav class="bottom-nav">
+    <button class="nav-item active" onclick="goHome()">
+      <i class="fa-solid fa-house"></i>
+      <span>Home</span>
+    </button>
+    <button class="nav-item" onclick="toggleSearchBar()">
+      <i class="fa-solid fa-compass"></i>
+      <span>Explore</span>
+    </button>
+    <button class="nav-item" onclick="openKeyModal()">
+      <i class="fa-solid fa-gear"></i>
+      <span>Settings</span>
+    </button>
+  </nav>
+
+  <!-- Key Modal -->
   <div class="key-modal" id="keyModal">
     <div class="key-box">
-      <i class="fa-solid fa-key key-icon"></i>
-      <h2>Enter YouTube API Key</h2>
-      <p>Apni YouTube Data API v3 key yahan paste karo. Ye browser me safe save ho jayegi aur GitHub ko bilkul nahi dikhegi! 😉</p>
-      <input type="text" class="key-input-field" id="userKeyInput" placeholder="Paste AIzaSy... key here">
-      <button class="key-save-btn" onclick="saveApiKey()">Unlock Movie World 🚀</button>
+      <h3>YouTube API Key</h3>
+      <p style="font-size: 0.85rem; color: #aaa; margin: 10px 0;">Apni YouTube Data API v3 key enter karein:</p>
+      <input type="text" id="apiKeyInput" placeholder="AIzaSy..." />
+      <button onclick="saveApiKey()">Save & Continue 🚀</button>
     </div>
   </div>
 
+  <!-- YouTube IFrame API -->
+  <script src="https://www.youtube.com/iframe_api"></script>
+
   <script>
-    // LocalStorage se API key nikalna
-    function getStoredApiKey() {
+    let player = null;
+    let currentActiveVideoId = "";
+    let isSubscribed = false;
+    let isLiked = false;
+    let currentBrightness = 1.0;
+    let currentVolume = 100;
+    let sleepTimerTimeout = null;
+    let backgroundPlayEnabled = true;
+
+    function getApiKey() {
       return localStorage.getItem("mw_youtube_api_key") || "";
     }
 
     function openKeyModal() {
-      document.getElementById("userKeyInput").value = getStoredApiKey();
+      document.getElementById("apiKeyInput").value = getApiKey();
       document.getElementById("keyModal").classList.add("open");
     }
 
-    function closeKeyModal() {
-      document.getElementById("keyModal").classList.remove("open");
-    }
-
     function saveApiKey() {
-      const inputKey = document.getElementById("userKeyInput").value.trim();
-      if (!inputKey) {
-        alert("Bhai key to daalo pehle! 😂");
-        return;
-      }
-      localStorage.setItem("mw_youtube_api_key", inputKey);
-      closeKeyModal();
-      searchYouTube("Action Movies Hindi Dubbed");
+      const val = document.getElementById("apiKeyInput").value.trim();
+      if (!val) return alert("Key daalo pehle! 😂");
+      localStorage.setItem("mw_youtube_api_key", val);
+      document.getElementById("keyModal").classList.remove("open");
+      fetchFeed("Latest Hindi Dubbed Movies");
     }
 
-    // YouTube API Search Function
-    async function searchYouTube(query) {
-      const apiKey = getStoredApiKey();
-      
-      // Agar chabi nahi mili, to popup khol do!
-      if (!apiKey) {
+    function toggleSearchBar() {
+      const wrap = document.getElementById("searchWrap");
+      wrap.classList.toggle("open");
+      if (wrap.classList.contains("open")) {
+        document.getElementById("searchInput").focus();
+      }
+    }
+
+    function triggerSearch() {
+      const q = document.getElementById("searchInput").value.trim();
+      if (q) {
+        goHome();
+        fetchFeed(q + " full movie");
+      }
+    }
+
+    function goHome() {
+      document.getElementById("watchView").style.display = "none";
+      document.getElementById("homeView").style.display = "block";
+      document.getElementById("categoryChips").style.display = "flex";
+      if (player && player.stopVideo) player.stopVideo();
+      pauseSilentAudio();
+      window.scrollTo(0, 0);
+    }
+
+    function loadCategory(query, btn) {
+      document.querySelectorAll(".chip").forEach(c => c.classList.remove("active"));
+      btn.classList.add("active");
+      fetchFeed(query);
+    }
+
+    async function fetchFeed(query, isRelated = false) {
+      const key = getApiKey();
+      if (!key) {
         openKeyModal();
         return;
       }
 
-      const container = document.getElementById("moviesContainer");
-      const titleElement = document.getElementById("currentSectionTitle");
-      
-      titleElement.innerHTML = `<i class="fa-solid fa-magnifying-glass"></i> Results for: "${query}"`;
-      container.innerHTML = `<div class="loading-msg"><i class="fa-solid fa-spinner fa-spin"></i> Dhoondh rahe hain... 🍿</div>`;
+      const target = isRelated ? document.getElementById("relatedList") : document.getElementById("feedList");
+      if (!isRelated) {
+        target.innerHTML = `<p style="padding: 30px; text-align: center; color: #888;">Movies load ho rahi hain... 🍿</p>`;
+      }
 
-      const endpoint = `https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=15&q=${encodeURIComponent(query)}&type=video&key=${apiKey}`;
+      const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=15&q=${encodeURIComponent(query)}&type=video&key=${key}`;
 
       try {
-        const response = await fetch(endpoint);
-        const data = await response.json();
+        const res = await fetch(url);
+        const data = await res.json();
 
         if (data.error) {
-          container.innerHTML = `
-            <div class="loading-msg" style="color: #ff4d4d;">
-              <i class="fa-solid fa-triangle-exclamation"></i> Key Error: ${data.error.message}<br><br>
-              <button class="key-btn" style="margin: 0 auto;" onclick="openKeyModal()">Sahi Key Daalo</button>
-            </div>`;
+          target.innerHTML = `<p style="padding: 20px; color: red; text-align: center;">Error: ${data.error.message}</p>`;
           return;
         }
 
-        container.innerHTML = "";
-
-        if (!data.items || data.items.length === 0) {
-          container.innerHTML = `<div class="loading-msg">Koi video nahi mila! 😂</div>`;
-          return;
-        }
-
+        target.innerHTML = "";
         data.items.forEach(item => {
-          const videoId = item.id.videoId;
+          const vid = item.id.videoId;
           const title = item.snippet.title;
-          const thumbnail = item.snippet.thumbnails.high?.url || item.snippet.thumbnails.medium?.url;
           const channel = item.snippet.channelTitle;
+          const thumb = item.snippet.thumbnails.high?.url || item.snippet.thumbnails.medium?.url;
 
           const card = document.createElement("div");
-          card.className = "movie-card";
-          card.onclick = () => openVideo(videoId);
+          card.className = "feed-item";
+          card.onclick = () => playVideo(vid, title, channel);
 
           card.innerHTML = `
-            <div class="thumbnail-container">
-              <img src="${thumbnail}" alt="${title}" loading="lazy" />
-              <i class="fa-solid fa-circle-play play-btn"></i>
+            <div class="feed-thumb">
+              <img src="${thumb}" alt="${title}" loading="lazy"/>
+              <span class="feed-duration">Full HD</span>
             </div>
-            <div class="movie-info">
-              <h3 class="movie-title">${title}</h3>
-              <div class="movie-meta">
-                <span><i class="fa-solid fa-tv"></i> ${channel}</span>
-                <span style="color: #e50914; font-weight: bold;">Full HD</span>
+            <div class="feed-meta">
+              <div class="feed-channel-avatar">${channel.charAt(0)}</div>
+              <div class="feed-details">
+                <div class="feed-title">${title}</div>
+                <div class="feed-sub">${channel} • HD Stream</div>
               </div>
             </div>
           `;
-          container.appendChild(card);
+          target.appendChild(card);
         });
 
-      } catch (error) {
-        console.error("Fetch Error:", error);
-        container.innerHTML = `<div class="loading-msg" style="color: #ff4d4d;">Network Error: Videos load nahi ho paaye!</div>`;
-      }
-    }
-
-    function handleSearch() {
-      const query = document.getElementById("searchInput").value.trim();
-      if (query) {
-        searchYouTube(query + " movie");
-      }
-    }
-
-    function filterCategory(categoryQuery, btnElement) {
-      document.querySelectorAll(".filter-tags button").forEach(btn => btn.classList.remove("active"));
-      btnElement.classList.add("active");
-      searchYouTube(categoryQuery);
-    }
-
-    function openVideo(videoId) {
-      const modal = document.getElementById("videoModal");
-      const player = document.getElementById("videoPlayer");
-      player.src = `https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0`;
-      modal.classList.add("open");
-    }
-
-    function closeVideo() {
-      const modal = document.getElementById("videoModal");
-      const player = document.getElementById("videoPlayer");
-      player.src = "";
-      modal.classList.remove("open");
-    }
-
-    document.getElementById("videoModal").onclick = function(e) {
-      if (e.target === this) closeVideo();
-    };
-
-    document.getElementById("searchInput").addEventListener("keypress", (e) => {
-      if (e.key === "Enter") handleSearch();
-    });
-
-    // Page Load hote hi check karega
-    window.onload = () => {
-      const apiKey = getStoredApiKey();
-      if (!apiKey) {
-        openKeyModal();
-      } else {
-        searchYouTube("Action Movies Hindi Dubbed");
-      }
-    };
-  </script>
-</body>
-</html>
+      } catch (
