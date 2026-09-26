@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Movie World - Real YouTube Movies</title>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    body {
+      background-color: #0f1218;
+      color: #ffffff;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Navbar */
+    header {
+      background: #171b24;
+      padding: 15px 25px;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.6);
+      gap: 15px;
+    }
+
+    .logo {
+      font-size: 1.6rem;
+      font-weight: 800;
+      color: #e50914;
+      letter-spacing: 1px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .search-box {
+      display: flex;
+      align-items: center;
+      background: #232834;
+      border-radius: 30px;
+      padding: 6px 16px;
+      width: 100%;
+      max-width: 420px;
+      border: 1px solid #333a4d;
+    }
+
+    .search-box input {
+      background: transparent;
+      border: none;
+      outline: none;
+      color: #fff;
+      padding: 6px;
+      width: 100%;
+      font-size: 0.95rem;
+    }
+
+    .search-box button {
+      background: none;
+      border: none;
+      color: #e50914;
+      cursor: pointer;
+      font-size: 1.1rem;
+    }
+
+    .key-btn {
+      background: #232834;
+      color: #ffb703;
+      border: 1px solid #444d63;
+      padding: 8px 14px;
+      border-radius: 20px;
+      cursor: pointer;
+      font-size: 0.85rem;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: 0.2s;
+    }
+
+    .key-btn:hover {
+      background: #ffb703;
+      color: #000;
+    }
+
+    /* Category Filter Tags */
+    .filter-tags {
+      display: flex;
+      gap: 12px;
+      padding: 15px 25px;
+      overflow-x: auto;
+      background: #131720;
+      border-bottom: 1px solid #202636;
+      scrollbar-width: none;
+    }
+
+    .filter-tags::-webkit-scrollbar {
+      display: none;
+    }
+
+    .filter-tags button {
+      background: #1f2533;
+      color: #ccc;
+      border: 1px solid #313a4f;
+      padding: 8px 18px;
+      border-radius: 20px;
+      cursor: pointer;
+      white-space: nowrap;
+      font-size: 0.9rem;
+      font-weight: 500;
+      transition: all 0.2s ease;
+    }
+
+    .filter-tags button.active, .filter-tags button:hover {
+      background: #e50914;
+      color: #fff;
+      border-color: #e50914;
+      box-shadow: 0 4px 12px rgba(229, 9, 20, 0.4);
+    }
+
+    /* Main Grid */
+    main {
+      padding: 25px;
+      flex: 1;
+    }
+
+    .section-title {
+      font-size: 1.25rem;
+      font-weight: 700;
+      margin-bottom: 20px;
+      color: #f1f1f1;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .movies-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      gap: 22px;
+    }
+
+    .movie-card {
+      background: #1a1f2c;
+      border-radius: 12px;
+      overflow: hidden;
+      cursor: pointer;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      position: relative;
+      border: 1px solid #283042;
+    }
+
+    .movie-card:hover {
+      transform: translateY(-7px);
+      box-shadow: 0 12px 24px rgba(229, 9, 20, 0.35);
+      border-color: #e50914;
+    }
+
+    .thumbnail-container {
+      position: relative;
+      width: 100%;
+      padding-top: 56.25%;
+      background: #000;
+    }
+
+    .thumbnail-container img {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .play-btn {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 2.8rem;
+      color: rgba(255, 255, 255, 0.9);
+      opacity: 0;
+      transition: opacity 0.25s ease, transform 0.25s ease;
+    }
+
+    .movie-card:hover .play-btn {
+      opacity: 1;
+      transform: translate(-50%, -50%) scale(1.1);
+    }
+
+    .movie-info {
+      padding: 14px;
+    }
+
+    .movie-title {
+      font-size: 0.95rem;
+      font-weight: 600;
+      line-height: 1.4;
+      margin-bottom: 8px;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      color: #fff;
+    }
+
+    .movie-meta {
+      font-size: 0.8rem;
+      color: #9aa4be;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    /* Video Player Modal */
+    .modal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.9);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+      padding: 15px;
+    }
+
+    .modal.open {
+      display: flex;
+    }
+
+    .modal-content {
+      position: relative;
+      width: 100%;
+      max-width: 900px;
+      background: #000;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+    }
+
+    .iframe-wrapper {
+      position: relative;
+      padding-top: 56.25%;
+    }
+
+    .iframe-wrapper iframe {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      border: none;
+    }
+
+    .close-modal {
+      position: absolute;
+      top: -42px;
+      right: 0;
+      background: transparent;
+      color: #fff;
+      font-size: 2rem;
+      border: none;
+      cursor: pointer;
+    }
+
+    /* API Key Modal Styling */
+    .key-modal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.85);
+      z-index: 2000;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .key-modal.open {
+      display: flex;
+    }
+
+    .key-box {
+      background: #1c222e;
+      border: 1px solid #364157;
+      border-radius: 12px;
+      max-width: 450px;
+      width: 100%;
+      padding: 25px;
+      text-align: center;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.7);
+    }
+
+    .key-box i.key-icon {
+      font-size: 2.8rem;
+      color: #ffb703;
+      margin-bottom: 15px;
+    }
+
+    .key-box h2 {
+      font-size: 1.3rem;
+      margin-bottom: 8px;
+    }
+
+    .key-box p {
+      color: #9aa4be;
+      font-size: 0.9rem;
+      margin-bottom: 20px;
+      line-height: 1.5;
+    }
+
+    .key-input-field {
+      width: 100%;
+      padding: 12px 15px;
+      background: #12161f;
+      border: 1px solid #3a455c;
+      border-radius: 8px;
+      color: #fff;
+      font-size: 0.95rem;
+      margin-bottom: 15px;
+      outline: none;
+    }
+
+    .key-input-field:focus {
+      border-color: #e50914;
+    }
+
+    .key-save-btn {
+      width: 100%;
+      padding: 12px;
+      background: #e50914;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    .key-save-btn:hover {
+      background: #b80710;
+    }
+
+    .loading-msg {
+      color: #aaa;
+      grid-column: 1 / -1;
+      text-align: center;
+      padding: 40px;
+      font-size: 1.2rem;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Navbar -->
+  <header>
+    <div class="logo">
+      <i class="fa-solid fa-film"></i> MOVIE WORLD
+    </div>
+    <div class="search-box">
+      <input type="text" id="searchInput" placeholder="Search any movie, anime, show...">
+      <button onclick="handleSearch()"><i class="fa-solid fa-magnifying-glass"></i></button>
+    </div>
+    <!-- Key setting button -->
+    <button class="key-btn" onclick="openKeyModal()"><i class="fa-solid fa-key"></i> Set / Change Key</button>
+  </header>
+
+  <!-- Categories -->
+  <div class="filter-tags">
+    <button class="active" onclick="filterCategory('Action Movies Hindi Dubbed', this)">🔥 Action</button>
+    <button onclick="filterCategory('South Hindi Dubbed Full Movies', this)">💥 South Dubbed</button>
+    <button onclick="filterCategory('Bollywood Full Movies', this)">🎬 Bollywood</button>
+    <button onclick="filterCategory('Anime Episodes Hindi Dubbed', this)">⚡ Anime</button>
+    <button onclick="filterCategory('Comedy Movies Hindi', this)">😂 Comedy</button>
+    <button onclick="filterCategory('Hollywood Movies Hindi Dubbed', this)">🍿 Hollywood</button>
+  </div>
+
+  <!-- Content Section -->
+  <main>
+    <div class="section-title" id="currentSectionTitle">
+      <i class="fa-solid fa-fire"></i> Trending Movies
+    </div>
+    <div class="movies-grid" id="moviesContainer"></div>
+  </main>
+
+  <!-- Video Player Modal -->
+  <div class="modal" id="videoModal">
+    <div class="modal-content">
+      <button class="close-modal" onclick="closeVideo()">&times;</button>
+      <div class="iframe-wrapper">
+        <iframe id="videoPlayer" src="" allowfullscreen allow="autoplay; encrypted-media"></iframe>
+      </div>
+    </div>
+  </div>
+
+  <!-- API Key Input Modal (Pop-up Chabhi Wala) -->
+  <div class="key-modal" id="keyModal">
+    <div class="key-box">
+      <i class="fa-solid fa-key key-icon"></i>
+      <h2>Enter YouTube API Key</h2>
+      <p>Apni YouTube Data API v3 key yahan paste karo. Ye browser me safe save ho jayegi aur GitHub ko bilkul nahi dikhegi! 😉</p>
+      <input type="text" class="key-input-field" id="userKeyInput" placeholder="Paste AIzaSy... key here">
+      <button class="key-save-btn" onclick="saveApiKey()">Unlock Movie World 🚀</button>
+    </div>
+  </div>
+
+  <script>
+    // LocalStorage se API key nikalna
+    function getStoredApiKey() {
+      return localStorage.getItem("mw_youtube_api_key") || "";
+    }
+
+    function openKeyModal() {
+      document.getElementById("userKeyInput").value = getStoredApiKey();
+      document.getElementById("keyModal").classList.add("open");
+    }
+
+    function closeKeyModal() {
+      document.getElementById("keyModal").classList.remove("open");
+    }
+
+    function saveApiKey() {
+      const inputKey = document.getElementById("userKeyInput").value.trim();
+      if (!inputKey) {
+        alert("Bhai key to daalo pehle! 😂");
+        return;
+      }
+      localStorage.setItem("mw_youtube_api_key", inputKey);
+      closeKeyModal();
+      searchYouTube("Action Movies Hindi Dubbed");
+    }
+
+    // YouTube API Search Function
+    async function searchYouTube(query) {
+      const apiKey = getStoredApiKey();
+      
+      // Agar chabi nahi mili, to popup khol do!
+      if (!apiKey) {
+        openKeyModal();
+        return;
+      }
+
+      const container = document.getElementById("moviesContainer");
+      const titleElement = document.getElementById("currentSectionTitle");
+      
+      titleElement.innerHTML = `<i class="fa-solid fa-magnifying-glass"></i> Results for: "${query}"`;
+      container.innerHTML = `<div class="loading-msg"><i class="fa-solid fa-spinner fa-spin"></i> Dhoondh rahe hain... 🍿</div>`;
+
+      const endpoint = `https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=15&q=${encodeURIComponent(query)}&type=video&key=${apiKey}`;
+
+      try {
+        const response = await fetch(endpoint);
+        const data = await response.json();
+
+        if (data.error) {
+          container.innerHTML = `
+            <div class="loading-msg" style="color: #ff4d4d;">
+              <i class="fa-solid fa-triangle-exclamation"></i> Key Error: ${data.error.message}<br><br>
+              <button class="key-btn" style="margin: 0 auto;" onclick="openKeyModal()">Sahi Key Daalo</button>
+            </div>`;
+          return;
+        }
+
+        container.innerHTML = "";
+
+        if (!data.items || data.items.length === 0) {
+          container.innerHTML = `<div class="loading-msg">Koi video nahi mila! 😂</div>`;
+          return;
+        }
+
+        data.items.forEach(item => {
+          const videoId = item.id.videoId;
+          const title = item.snippet.title;
+          const thumbnail = item.snippet.thumbnails.high?.url || item.snippet.thumbnails.medium?.url;
+          const channel = item.snippet.channelTitle;
+
+          const card = document.createElement("div");
+          card.className = "movie-card";
+          card.onclick = () => openVideo(videoId);
+
+          card.innerHTML = `
+            <div class="thumbnail-container">
+              <img src="${thumbnail}" alt="${title}" loading="lazy" />
+              <i class="fa-solid fa-circle-play play-btn"></i>
+            </div>
+            <div class="movie-info">
+              <h3 class="movie-title">${title}</h3>
+              <div class="movie-meta">
+                <span><i class="fa-solid fa-tv"></i> ${channel}</span>
+                <span style="color: #e50914; font-weight: bold;">Full HD</span>
+              </div>
+            </div>
+          `;
+          container.appendChild(card);
+        });
+
+      } catch (error) {
+        console.error("Fetch Error:", error);
+        container.innerHTML = `<div class="loading-msg" style="color: #ff4d4d;">Network Error: Videos load nahi ho paaye!</div>`;
+      }
+    }
+
+    function handleSearch() {
+      const query = document.getElementById("searchInput").value.trim();
+      if (query) {
+        searchYouTube(query + " movie");
+      }
+    }
+
+    function filterCategory(categoryQuery, btnElement) {
+      document.querySelectorAll(".filter-tags button").forEach(btn => btn.classList.remove("active"));
+      btnElement.classList.add("active");
+      searchYouTube(categoryQuery);
+    }
+
+    function openVideo(videoId) {
+      const modal = document.getElementById("videoModal");
+      const player = document.getElementById("videoPlayer");
+      player.src = `https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0`;
+      modal.classList.add("open");
+    }
+
+    function closeVideo() {
+      const modal = document.getElementById("videoModal");
+      const player = document.getElementById("videoPlayer");
+      player.src = "";
+      modal.classList.remove("open");
+    }
+
+    document.getElementById("videoModal").onclick = function(e) {
+      if (e.target === this) closeVideo();
+    };
+
+    document.getElementById("searchInput").addEventListener("keypress", (e) => {
+      if (e.key === "Enter") handleSearch();
+    });
+
+    // Page Load hote hi check karega
+    window.onload = () => {
+      const apiKey = getStoredApiKey();
+      if (!apiKey) {
+        openKeyModal();
+      } else {
+        searchYouTube("Action Movies Hindi Dubbed");
+      }
+    };
+  </script>
+</body>
+</html>
